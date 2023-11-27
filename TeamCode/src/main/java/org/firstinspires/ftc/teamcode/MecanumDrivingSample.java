@@ -62,6 +62,10 @@ public class MecanumDrivingSample extends LinearOpMode {
             // strafing speed, the forward speed, and the turning speed of the robot frame
             // respectively from [-1, 1].
 
+            double leftX = driverOp.getLeftX();
+            double leftY = driverOp.getLeftY();
+            double rightX = driverOp.getRightX();
+
             if (!FIELD_CENTRIC) {
 
                 // For a robot centric model, the input of (0,1,0) for (leftX, leftY, rightX)
@@ -82,9 +86,9 @@ public class MecanumDrivingSample extends LinearOpMode {
 
                 // optional fourth parameter for squared inputs
                 drive.driveRobotCentric(
-                        driverOp.getLeftX(),
-                        driverOp.getLeftY(),
-                        driverOp.getRightX(),
+                        -leftX,
+                        -leftY,
+                        -rightX,
                         false
                 );
             } else {
@@ -106,9 +110,9 @@ public class MecanumDrivingSample extends LinearOpMode {
 
                 // optional fifth parameter for squared inputs
                 drive.driveFieldCentric(
-                        driverOp.getLeftX(),
-                        driverOp.getLeftY(),
-                        driverOp.getRightX(),
+                        -leftX,
+                        -leftY,
+                        -rightX,
                         90,   // gyro value passed in here must be in degrees
                         false
                 );
