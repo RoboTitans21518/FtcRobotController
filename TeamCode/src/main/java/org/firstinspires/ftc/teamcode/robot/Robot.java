@@ -4,13 +4,14 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
 import org.firstinspires.ftc.teamcode.subsystem.drive.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.subsystem.drone.DroneSystem;
 import org.firstinspires.ftc.teamcode.subsystem.hang.HangSystem;
 import org.firstinspires.ftc.teamcode.subsystem.intake.Intake;
 
 public class Robot {
-    //private MecanumDriveTrain mecanumDriveTrain;
+    private MecanumDriveTrain mecanumDriveTrain;
 
     private HangSystem hangSystem;
     private DroneSystem droneSystem;
@@ -19,7 +20,7 @@ public class Robot {
     private GamepadEx gamepad;
 
     public Robot(HardwareMap hwMap, Gamepad gamepad) {
-        //mecanumDriveTrain = new MecanumDriveTrain(hwMap);
+        mecanumDriveTrain = new MecanumDriveTrain(hwMap);
         intake = new Intake(hwMap);
         this.gamepad = new GamepadEx(gamepad);
         hangSystem = new HangSystem(hwMap);
@@ -27,34 +28,36 @@ public class Robot {
     }
 
     public void loop() {
+        /* Get current button state
+         * - One toggle button that will move the Intake from PICKUP to SCORE and back to
+         *   PICKUP. [ButtonA]
+         * - One toggle button that will OPEN/CLOSE the LEFT claw while Intake is in PICKUP
+         *   state. [ButtonX]
+         * - One toggle button that will OPEN/CLOSE the RIGHT claw while Intake is in PICKUP
+         *   state. [ButtonY]
+         * - One toggle button to move between HANG and RETRACTED states. [ButtonDPAD_LEFT]
+         * - One toggle button to move between INIT and FLY states. [ButtonDPAD_RIGHT]
+         */
         gamepad.readButtons();
 
-        // Update the meccanum inputs
-        //mecanumDriveTrain.updateInputs(
-        //        gamepad.getLeftX(), gamepad.getLeftY(), gamepad.getRightX()
-        //);
-        //mecanumDriveTrain.loop();
+        // Update the meccanum inputs and trigger loop to move the robot
+        mecanumDriveTrain.updateInputs(
+                gamepad.getLeftX(), gamepad.getLeftY(), gamepad.getRightX()
+        );
+        mecanumDriveTrain.loop();
 
         // update the intake inputs
-        if (gamepad.getButton(GamepadKeys.Button.A)) {
-            intake.setLeftClawState(Intake.ClawState.OPEN);
-        } else if (gamepad.getButton(GamepadKeys.Button.B)) {
-            intake.setLeftClawState(Intake.ClawState.CLOSED);
-        }
+        if (gamepad.getButton(GamepadKeys.Button.A)) intake.toggleState();
+        if (gamepad.getButton(GamepadKeys.Button.X)) intake.toggleLeftClaw();
+        if (gamepad.getButton(GamepadKeys.Button.Y)) intake.toggleRightClaw();
         intake.loop();
 
         // update the hang system inputs
-        if (gamepad.getButton(GamepadKeys.Button.X)) {
-            hangSystem.setState(HangSystem.HangState.HANG);
-        } else if (gamepad.getButton(GamepadKeys.Button.Y)) {
-            hangSystem.setState(HangSystem.HangState.RETRACTED);
-        }
+        if (gamepad.getButton(GamepadKeys.Button.DPAD_LEFT)) hangSystem.toggleState();
         hangSystem.loop();
 
         // update the drone system inputs
-        if (gamepad.getButton(GamepadKeys.Button.DPAD_LEFT)) {
-            droneSystem.setState(DroneSystem.DroneState.FLY);
-        }
+        if (gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT)) droneSystem.toggleState();
         droneSystem.loop();
     }
 }

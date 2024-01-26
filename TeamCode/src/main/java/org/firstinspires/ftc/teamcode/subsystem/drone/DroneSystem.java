@@ -6,10 +6,21 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.subsystem.hang.HangSystem;
 
+/*
+ * The DRONE system has a servo controlling the trigger.
+ *
+ * Starts in INIT state. Moves to FLY state to trigger the drone.
+ *
+ * For Teleop we will need a button to trigger the drone.
+ * - One toggle button to move between INIT and FLY states. [ButtonDPAD_RIGHT]
+ */
 public class DroneSystem {
     private Servo drone;
     private DroneState state;
     private double position;
+
+    private final double INIT_POSITION = 0.5;
+    private final double FLY_POSITION = 0.2;
 
     public void setState(DroneState state) {
         this.state = state;
@@ -26,7 +37,26 @@ public class DroneSystem {
         position = drone.getPosition();
     }
 
+    private void moveDroneToPosition(double dronePosition) {
+
+    }
+
+    public void toggleState() {
+        if (state == DroneState.INIT) state = DroneState.FLY;
+        if (state == DroneState.FLY) state = DroneState.INIT;
+    }
+
     public void loop() {
         // React to state
+        switch (state) {
+            case FLY:
+                moveDroneToPosition(FLY_POSITION);
+                break;
+            case INIT:
+                moveDroneToPosition(INIT_POSITION);
+                break;
+            default:
+                break;
+        }
     }
 }
