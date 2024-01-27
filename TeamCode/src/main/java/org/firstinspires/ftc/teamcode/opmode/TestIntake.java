@@ -24,6 +24,7 @@ public class TestIntake extends LinearOpMode {
             gamepad.readButtons();
 
             if (gamepad.wasJustPressed(GamepadKeys.Button.A)) intake.toggleState();
+            if (gamepad.wasJustPressed(GamepadKeys.Button.B)) intake.toggleRotator();
             if (gamepad.wasJustPressed(GamepadKeys.Button.X)) intake.toggleLeftClaw();
             if (gamepad.wasJustPressed(GamepadKeys.Button.Y)) intake.toggleRightClaw();
             intake.loop();

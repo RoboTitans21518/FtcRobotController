@@ -60,8 +60,8 @@ public class Intake {
     public static double RIGHT_CLAW_OPEN_POSITION = 0.4;
     public static double RIGHT_CLAW_CLOSE_POSITION = 0.6;
 
-    public static double ROTATOR_FLAT_POSITION = 0;
-    public static double ROTATOR_SCORE_POSITION = 0;
+    public static double ROTATOR_FLAT_POSITION = 0.2;
+    public static double ROTATOR_SCORE_POSITION = 0.8;
 
     public enum ArmState {
         INIT,
@@ -92,10 +92,11 @@ public class Intake {
         INTAKE_TOGGLE,
         LEFT_CLAW_TOGGLE,
         RIGHT_CLAW_TOGGLE,
+        ROTATOR_TOGGLE
     }
 
     public Intake(HardwareMap hwMap) {
-        armMotor = new Motor(hwMap, "arm", Motor.GoBILDA.RPM_312);
+        armMotor = new Motor(hwMap, "armMotor", Motor.GoBILDA.RPM_312);
         armMotor.setInverted(true);
         armMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         leftClaw = hwMap.get(Servo.class, "leftClaw");
@@ -177,11 +178,30 @@ public class Intake {
         }
     }
 
+    private void handleRotatorState(RotateState current, Event event) {
+        switch (event) {
+            case ROTATOR_TOGGLE:
+                // Handle toggle of left claw
+                if (current == RotateState.FLAT) {
+                    rotateState = RotateState.SCORE;
+                }
+                if (current == RotateState.SCORE) {
+                    rotateState = RotateState.FLAT;
+                }
+            default:
+                break;
+        }
+    }
+
     // Toggle state between PICKUP and SCORE (if not in INIT state)
     // Puts the sub systems in the next state so they can move to it
     // when loop is called
     public void toggleState() {
         handleIntakeState(intakeState, Event.INTAKE_TOGGLE);
+    }
+
+    public void toggleRotator() {
+        handleRotatorState(rotateState, Event.ROTATOR_TOGGLE);
     }
 
     public void toggleLeftClaw() {
