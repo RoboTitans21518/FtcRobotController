@@ -3,56 +3,78 @@ package org.firstinspires.ftc.teamcode.opmode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.arcrobotics.ftclib.controller.PIDFController;
+import com.arcrobotics.ftclib.controller.wpilibcontroller.ArmFeedforward;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import com.arcrobotics.ftclib.controller.PIDController;
-
+/*
+ * Use velocity instead of power. More control.
+ * - Do a MAX velocity for the motor. Set the maxVelocity to 80%. (2580 for 312 RPN motor.
+ */
 @Config
 @TeleOp(name="ArmTuning", group="Linear OpMode")
 public class ArmTuning extends LinearOpMode {
-    private PIDController controller;
+    private PIDFController controller;
 
+    public static double MAX_VELOCITY_GOBUILDA_312 = 2580;
+    public static double TICKS_PER_REV_GOBUILDA_312 = 537;
+
+    // F value is ~ 32767/(MAX_VELOCITY)
+    public static double f = 5;
+
+    // P = 0.1 * F, I = 0.1 *P, D=0, position value to 5.
     public static double p = 0, i = 0, d = 0;
-    public static double f = 0;
 
-    public static int target = 0;
+    public static int targetVelocity = 100;
 
-    private final double zeroOffset = 28.0;
-    private final double ticks_in_degree = 312 / 180;
+    private final double ticks_in_degree = TICKS_PER_REV_GOBUILDA_312/360;
 
     private DcMotorEx arm_motor;
 
     @Override
     public void runOpMode() {
-        controller = new PIDController(p, i, d);
+        controller = new PIDFController(p, i, d, f);
         telemetry = new MultipleTelemetry(
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry(),
                 FtcDashboard.getInstance().getTelemetry());
 
         arm_motor = hardwareMap.get(DcMotorEx.class, "armMotor");
+        arm_motor.setDirection(DcMotorSimple.Direction.REVERSE);
         arm_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        arm_motor.setVelocityPIDFCoefficients(p, i, d, f);
+        arm_motor.setPositionPIDFCoefficients(5);
         arm_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         waitForStart();
 
         while (!isStopRequested()) {
-            controller.setPID(p, i, d);
-            int armPos = arm_motor.getCurrentPosition();
-            double pid = controller.calculate(armPos, target);
-            double ff = Math.cos(Math.toRadians(target / ticks_in_degree))* f;
-            double power = pid + ff;
-            telemetry.addData("Power:", power);
-            telemetry.addData("Arm Pos:", armPos);
-            telemetry.addData("Pid:", pid);
+            controller.setPIDF(p, i, d, f);
+            double curPosition = arm_motor.getCurrentPosition();
+            double curVelocity = arm_motor.getVelocity();
+            double velocityPID = controller.calculate(curVelocity, targetVelocity);
+            double radians = Math.toRadians(curPosition / ticks_in_degree);
+            double ff = Math.cos(radians) * f;
+            double velocity = velocityPID + ff;
+
+            arm_motor.setVelocityPIDFCoefficients(p, i, d, f);
+            arm_motor.setVelocity(velocity);
+
+            telemetry.log().clear();
+            telemetry.addData("Position:", curPosition);
+            telemetry.addData("Velocity:", curVelocity);
+            telemetry.addData("Calc Velocity:", velocity);
+            telemetry.addData("Velocity PID:", velocityPID);
+            telemetry.addData("Radians:", radians);
+            telemetry.addData("Cos:", Math.cos(radians));
             telemetry.addData("FF:", ff);
             telemetry.update();
-            arm_motor.setPower(power);
+
         }
     }
 }
