@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystem.intake;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -32,6 +33,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * - One toggle button that will OPEN/CLOSE the RIGHT claw while Intake is in PICKUP
  *   state. [ButtonY]
  */
+@Config
 public class Intake {
     private Motor armMotor;
     private Servo leftClaw;
@@ -50,16 +52,16 @@ public class Intake {
     private double armPosition;
 
     // TODO: Tune these numbers
-    public final double ARM_PICKUP_POSITION = 200;
-    public final double ARM_SCORE_POSITION = 500;
+    public static double ARM_PICKUP_POSITION = .1;
+    public static double ARM_SCORE_POSITION = .5;
 
-    public final double LEFT_CLAW_OPEN_POSITION = 0.1;
-    public final double LEFT_CLAW_CLOSE_POSITION = 0.3;
-    public final double RIGHT_CLAW_OPEN_POSITION = 0.9;
-    public final double RIGHT_CLAW_CLOSE_POSITION = 0.7;
+    public static double LEFT_CLAW_OPEN_POSITION = 0.3;
+    public static double LEFT_CLAW_CLOSE_POSITION = 0.1;
+    public static double RIGHT_CLAW_OPEN_POSITION = 0.4;
+    public static double RIGHT_CLAW_CLOSE_POSITION = 0.6;
 
-    public final double ROTATOR_FLAT_POSITION = 0.1;
-    public final double ROTATOR_SCORE_POSITION = 0.6;
+    public static double ROTATOR_FLAT_POSITION = 0;
+    public static double ROTATOR_SCORE_POSITION = 0;
 
     public enum ArmState {
         INIT,
@@ -94,6 +96,8 @@ public class Intake {
 
     public Intake(HardwareMap hwMap) {
         armMotor = new Motor(hwMap, "arm", Motor.GoBILDA.RPM_312);
+        armMotor.setInverted(true);
+        armMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         leftClaw = hwMap.get(Servo.class, "leftClaw");
         rightClaw = hwMap.get(Servo.class, "rightClaw");
         rotator = hwMap.get(Servo.class, "rotator");
@@ -189,15 +193,15 @@ public class Intake {
     }
 
     private void moveArmToPosition(double armPosition) {
-
+        armMotor.set(armPosition);
     }
 
     private void moveRotatorToPosition(double rotatePosition) {
-
+        rotator.setPosition(rotatePosition);
     }
 
     private void moveClawToPosition(Servo claw, double clawPosition) {
-
+        claw.setPosition(clawPosition);
     }
 
     public void loop() {

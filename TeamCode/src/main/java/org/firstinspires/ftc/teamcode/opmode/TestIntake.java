@@ -10,19 +10,22 @@ import org.firstinspires.ftc.teamcode.subsystem.intake.Intake;
 
 @TeleOp(name="TestIntake", group="Linear OpMode")
 public class TestIntake extends LinearOpMode {
-    private Intake intake = new Intake(hardwareMap);
-    private GamepadEx gamepad = new GamepadEx(gamepad1);
+    private Intake intake;
+    private GamepadEx gamepad;
 
     @Override
     public void runOpMode() {
+        intake = new Intake(hardwareMap);
+        gamepad = new GamepadEx(gamepad1);
+
         waitForStart();
 
         while (!isStopRequested()) {
             gamepad.readButtons();
 
-            if (gamepad.getButton(GamepadKeys.Button.A)) intake.toggleState();
-            if (gamepad.getButton(GamepadKeys.Button.X)) intake.toggleLeftClaw();
-            if (gamepad.getButton(GamepadKeys.Button.Y)) intake.toggleRightClaw();
+            if (gamepad.wasJustPressed(GamepadKeys.Button.A)) intake.toggleState();
+            if (gamepad.wasJustPressed(GamepadKeys.Button.X)) intake.toggleLeftClaw();
+            if (gamepad.wasJustPressed(GamepadKeys.Button.Y)) intake.toggleRightClaw();
             intake.loop();
         }
     }

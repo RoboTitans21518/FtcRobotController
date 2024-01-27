@@ -9,18 +9,21 @@ import org.firstinspires.ftc.teamcode.subsystem.drone.DroneSystem;
 
 @TeleOp(name="TestDrone", group="Linear OpMode")
 public class TestDrone extends LinearOpMode {
-    private DroneSystem droneSystem = new DroneSystem(hardwareMap);
-    private GamepadEx gamepad = new GamepadEx(gamepad1);
+    private DroneSystem droneSystem;
+    private GamepadEx gamepad;
 
     @Override
     public void runOpMode() {
+        droneSystem = new DroneSystem(hardwareMap);
+        gamepad = new GamepadEx(gamepad1);
+
         waitForStart();
 
         while (!isStopRequested()) {
             gamepad.readButtons();
 
             // update the drone system inputs
-            if (gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT)) droneSystem.toggleState();
+            if (gamepad.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) droneSystem.toggleState();
             droneSystem.loop();
         }
     }

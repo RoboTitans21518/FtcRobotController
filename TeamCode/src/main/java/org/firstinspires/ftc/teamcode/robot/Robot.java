@@ -47,17 +47,17 @@ public class Robot {
         mecanumDriveTrain.loop();
 
         // update the intake inputs
-        if (gamepad.getButton(GamepadKeys.Button.A)) intake.toggleState();
-        if (gamepad.getButton(GamepadKeys.Button.X)) intake.toggleLeftClaw();
-        if (gamepad.getButton(GamepadKeys.Button.Y)) intake.toggleRightClaw();
+        if (gamepad.wasJustPressed(GamepadKeys.Button.A)) intake.toggleState();
+        if (gamepad.wasJustPressed(GamepadKeys.Button.X)) intake.toggleLeftClaw();
+        if (gamepad.wasJustPressed(GamepadKeys.Button.Y)) intake.toggleRightClaw();
         intake.loop();
 
         // update the hang system inputs
-        if (gamepad.getButton(GamepadKeys.Button.DPAD_LEFT)) hangSystem.toggleState();
+        if (gamepad.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) hangSystem.toggleState();
         hangSystem.loop();
 
         // update the drone system inputs
-        if (gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT)) droneSystem.toggleState();
+        if (gamepad.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) droneSystem.toggleState();
         droneSystem.loop();
     }
 }

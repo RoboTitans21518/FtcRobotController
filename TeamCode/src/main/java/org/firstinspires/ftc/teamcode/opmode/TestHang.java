@@ -9,17 +9,20 @@ import org.firstinspires.ftc.teamcode.subsystem.hang.HangSystem;
 
 @TeleOp(name="TestHang", group="Linear OpMode")
 public class TestHang extends LinearOpMode {
-    private HangSystem hangSystem = new HangSystem(hardwareMap);
-    private GamepadEx gamepad = new GamepadEx(gamepad1);
+    private HangSystem hangSystem;
+    private GamepadEx gamepad;
 
     @Override
     public void runOpMode() {
+        hangSystem = new HangSystem(hardwareMap);
+        gamepad = new GamepadEx(gamepad1);
+
         waitForStart();
 
         while (!isStopRequested()) {
             gamepad.readButtons();
 
-            if (gamepad.getButton(GamepadKeys.Button.DPAD_LEFT)) hangSystem.toggleState();
+            if (gamepad.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) hangSystem.toggleState();
             hangSystem.loop();
         }
     }
