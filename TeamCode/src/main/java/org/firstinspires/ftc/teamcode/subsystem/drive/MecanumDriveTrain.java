@@ -11,12 +11,14 @@ public class MecanumDriveTrain {
     double rightX;
 
     public MecanumDriveTrain(HardwareMap hwMap) {
-        drive = new com.arcrobotics.ftclib.drivebase.MecanumDrive(
-                new Motor(hwMap, "frontL", Motor.GoBILDA.RPM_312),
-                new Motor(hwMap, "frontR",  Motor.GoBILDA.RPM_312),
-                new Motor(hwMap, "backL",  Motor.GoBILDA.RPM_312),
-                new Motor(hwMap, "backR",  Motor.GoBILDA.RPM_312)
-        );
+        Motor frontL = new Motor(hwMap, "frontL", Motor.GoBILDA.RPM_312);
+        Motor frontR = new Motor(hwMap, "frontR", Motor.GoBILDA.RPM_312);
+        Motor backL = new Motor(hwMap, "backL", Motor.GoBILDA.RPM_312);
+        Motor backR = new Motor(hwMap, "backR", Motor.GoBILDA.RPM_312);
+        frontR.setInverted(true);
+        backR.setInverted(true);
+        drive = new com.arcrobotics.ftclib.drivebase.MecanumDrive(frontL, frontR, backL, backR);
+
         leftX = 0.0;
         leftY = 0.0;
         rightX = 0.0;
@@ -30,11 +32,10 @@ public class MecanumDriveTrain {
 
     public void loop() {
         drive.driveRobotCentric(
-                -leftX,
-                -leftY,
-                -rightX,
+                leftX,
+                leftY,
+                rightX,
                 false
         );
     }
-
 }
