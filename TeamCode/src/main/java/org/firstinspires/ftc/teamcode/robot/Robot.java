@@ -22,9 +22,10 @@ public class Robot {
     private GamepadEx gamepad;
 
     public Robot(HardwareMap hwMap, Gamepad gamepad) {
+        this.gamepad = new GamepadEx(gamepad);
         mecanumDriveTrain = new MecanumDriveTrain(hwMap);
         intake = new Intake(hwMap);
-        this.gamepad = new GamepadEx(gamepad);
+
         hangSystem = new HangSystem(hwMap);
         droneSystem = new DroneSystem(hwMap);
     }
@@ -64,7 +65,7 @@ public class Robot {
         }
 
         // update the drone system inputs
-        if (gamepad.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) droneSystem.toggleState();
+        if (gamepad.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) droneSystem.toggleState();
         droneSystem.loop();
     }
 }

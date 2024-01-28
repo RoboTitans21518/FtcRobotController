@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class TestClaw extends LinearOpMode {
     private Servo claw;
 
-    public static double clawPosition = 0;
+    public static double clawPosition = 0.4;
     @Override
     public void runOpMode() {
         claw = hardwareMap.get(Servo.class, "drone");
