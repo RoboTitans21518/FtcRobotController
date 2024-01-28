@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystem.drive.MecanumDriveTrain;
 import org.firstinspires.ftc.teamcode.subsystem.drone.DroneSystem;
 import org.firstinspires.ftc.teamcode.subsystem.hang.HangSystem;
@@ -54,8 +56,12 @@ public class Robot {
         intake.loop();
 
         // update the hang system inputs
-        if (gamepad.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) hangSystem.toggleState();
-        hangSystem.loop();
+        if (gamepad.isDown(GamepadKeys.Button.DPAD_UP)) {
+            hangSystem.up();
+        }
+        if (gamepad.isDown(GamepadKeys.Button.DPAD_DOWN)) {
+            hangSystem.down();
+        }
 
         // update the drone system inputs
         if (gamepad.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) droneSystem.toggleState();

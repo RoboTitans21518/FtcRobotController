@@ -19,12 +19,8 @@ public class DroneSystem {
     private DroneState state;
     private double position;
 
-    private final double INIT_POSITION = 0.5;
-    private final double FLY_POSITION = 0.2;
-
-    public void setState(DroneState state) {
-        this.state = state;
-    }
+    private final double INIT_POSITION = 0;
+    private final double FLY_POSITION = 1.0;
 
     public enum DroneState {
         INIT,
@@ -38,7 +34,7 @@ public class DroneSystem {
     }
 
     private void moveDroneToPosition(double dronePosition) {
-
+        drone.setPosition(dronePosition);
     }
 
     public void toggleState() {

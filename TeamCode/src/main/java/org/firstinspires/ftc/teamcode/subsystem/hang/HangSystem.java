@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystem.hang;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystem.intake.Intake;
 
 /*
@@ -18,47 +21,28 @@ import org.firstinspires.ftc.teamcode.subsystem.intake.Intake;
  * - One toggle button to move between HANG and RETRACTED states. [ButtonDPAD_LEFT]
  */
 public class HangSystem {
-    private Motor hangMotor;
-    private HangState state;
-
-    // TODO: Tune these values
-    private final double RETRACTED_POSITION = 100;
-    private final double HANG_POSITION = 500;
-
-    public void setState(HangState hang) {
-        this.state = state;
-    }
-
-    public enum HangState {
-        RETRACTED,
-        HANG
-    }
+    private DcMotorEx hangMotor;
 
     public HangSystem(HardwareMap hwMap) {
-        hangMotor = new Motor(hwMap, "hang", Motor.GoBILDA.RPM_312);
-        state = HangState.RETRACTED;
+        hangMotor = hwMap.get(DcMotorEx.class, "hang");
     }
 
-    private void moveHangToPosition(double hangPosition) {
-
+    public void up() {
+        hangMotor.setPower(1);
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {}
+        hangMotor.setPower(0);
     }
 
-    public void toggleState() {
-        if (state == HangState.RETRACTED) state = HangState.HANG;
-        if (state == HangState.HANG) state = HangState.RETRACTED;
+    public void down() {
+        hangMotor.setPower(-1);
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {}
+        hangMotor.setPower(0);
     }
 
     public void loop() {
-        // React to state
-        switch (state) {
-            case HANG:
-                moveHangToPosition(HANG_POSITION);
-                break;
-            case RETRACTED:
-                moveHangToPosition(RETRACTED_POSITION);
-                break;
-            default:
-                break;
-        }
     }
 }

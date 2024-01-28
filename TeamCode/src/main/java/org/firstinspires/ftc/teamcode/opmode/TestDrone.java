@@ -23,7 +23,9 @@ public class TestDrone extends LinearOpMode {
             gamepad.readButtons();
 
             // update the drone system inputs
-            if (gamepad.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) droneSystem.toggleState();
+            if (gamepad.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+                droneSystem.toggleState();
+            }
             droneSystem.loop();
         }
     }
