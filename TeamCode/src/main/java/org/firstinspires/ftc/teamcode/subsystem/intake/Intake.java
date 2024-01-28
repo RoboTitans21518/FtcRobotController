@@ -60,7 +60,7 @@ public class Intake {
     public static double RIGHT_CLAW_OPEN_POSITION = 0.4;
     public static double RIGHT_CLAW_CLOSE_POSITION = 0.6;
 
-    public static double ROTATOR_FLAT_POSITION = 0.2;
+    public static double ROTATOR_FLAT_POSITION = 0.6;
     public static double ROTATOR_SCORE_POSITION = 0.8;
 
     public enum ArmState {
@@ -191,6 +191,14 @@ public class Intake {
             default:
                 break;
         }
+    }
+
+    public void up() {
+        armMotor.motor.setPower(1);
+    }
+
+    public void down() {
+        armMotor.motor.setPower(-1);
     }
 
     // Toggle state between PICKUP and SCORE (if not in INIT state)

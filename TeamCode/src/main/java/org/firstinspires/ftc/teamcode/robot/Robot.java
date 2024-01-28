@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -21,6 +22,9 @@ public class Robot {
     private Intake intake;
     private GamepadEx gamepad;
 
+    private TriggerReader leftTriggerReader;
+    private TriggerReader rightTriggerReader;
+
     public Robot(HardwareMap hwMap, Gamepad gamepad) {
         this.gamepad = new GamepadEx(gamepad);
         mecanumDriveTrain = new MecanumDriveTrain(hwMap);
@@ -31,6 +35,13 @@ public class Robot {
     }
 
     public void loop() {
+        leftTriggerReader = new TriggerReader(
+                this.gamepad, GamepadKeys.Trigger.LEFT_TRIGGER
+        );
+        rightTriggerReader = new TriggerReader(
+                this.gamepad, GamepadKeys.Trigger.RIGHT_TRIGGER
+        );
+
         /* Get current button state
          * - One toggle button that will move the Intake from PICKUP to SCORE and back to
          *   PICKUP. [ButtonA]
@@ -63,6 +74,9 @@ public class Robot {
         if (gamepad.isDown(GamepadKeys.Button.DPAD_DOWN)) {
             hangSystem.down();
         }
+
+        if (rightTriggerReader.isDown()) intake.up();
+        if (leftTriggerReader.isDown()) intake.down();
 
         // update the drone system inputs
         if (gamepad.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) droneSystem.toggleState();
