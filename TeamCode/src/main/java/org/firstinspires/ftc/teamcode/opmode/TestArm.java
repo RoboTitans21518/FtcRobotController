@@ -3,28 +3,26 @@ package org.firstinspires.ftc.teamcode.opmode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
 @TeleOp(name="TestArm", group="Linear OpMode")
 public class TestArm extends LinearOpMode {
-    private DcMotorEx arm;
+    private Motor arm;
 
-    public static double MAX_VELOCITY = 0;
+    public static int targetPosition = 1200;
+
+    public static double kP = 0.05;
+    public static double kV = 0.1;
+
     @Override
     public void runOpMode() {
-        arm = hardwareMap.get(DcMotorEx.class, "armMotor");
-        arm.setDirection(DcMotorSimple.Direction.REVERSE);
-        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //arm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        PIDFController armController = new PIDFController(kP, 0, 0, kV);
+        arm = new Motor(hardwareMap, "armMotor", Motor.GoBILDA.RPM_312);
+        arm.setInverted(true);
 
         telemetry = new MultipleTelemetry(
                 telemetry,
@@ -34,14 +32,14 @@ public class TestArm extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
-            arm.setPower(1);
-            double curVelocity = arm.getVelocity();
-
-            if (curVelocity > MAX_VELOCITY) MAX_VELOCITY = curVelocity;
+            double currentPosition = arm.getCurrentPosition();
+            double position = armController.calculate(currentPosition);
+            arm.motor.setPower(position);
 
             telemetry.log().clear();
-            telemetry.addData("Current Velocity:", curVelocity);
-            telemetry.addData("Max Velocity:", MAX_VELOCITY);
+            telemetry.addData("Current Velocity:", targetPosition);
+            telemetry.addData("Power:", position);
+            telemetry.addData("Max Velocity:", arm.getCurrentPosition());
             telemetry.update();
         }
     }

@@ -19,7 +19,7 @@ public class DroneSystem {
     private DroneState state;
     private double position;
 
-    private final double INIT_POSITION = .6;
+    private final double INIT_POSITION = .65;
     private final double FLY_POSITION = .9;
 
     public enum DroneState {

@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.subsystem.intake;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -35,7 +38,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 @Config
 public class Intake {
-    private Motor armMotor;
+    private DcMotorEx armMotor;
     private Servo leftClaw;
     private Servo rightClaw;
     private Servo rotator;
@@ -52,8 +55,8 @@ public class Intake {
     private double armPosition;
 
     // TODO: Tune these numbers
-    public static double ARM_PICKUP_POSITION = .1;
-    public static double ARM_SCORE_POSITION = .5;
+    public static int ARM_PICKUP_POSITION = 100;
+    public static int ARM_SCORE_POSITION = 120;
 
     public static double LEFT_CLAW_OPEN_POSITION = 0.3;
     public static double LEFT_CLAW_CLOSE_POSITION = 0.1;
@@ -62,6 +65,8 @@ public class Intake {
 
     public static double ROTATOR_FLAT_POSITION = 0.6;
     public static double ROTATOR_SCORE_POSITION = 0.8;
+
+    public static double curArmPosition = 100;
 
     public enum ArmState {
         INIT,
@@ -96,9 +101,13 @@ public class Intake {
     }
 
     public Intake(HardwareMap hwMap) {
-        armMotor = new Motor(hwMap, "armMotor", Motor.GoBILDA.RPM_312);
-        armMotor.setInverted(true);
-        armMotor.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
+        armMotor = hwMap.get(DcMotorEx.class, "armMotor");
+        armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        armMotor.setTargetPosition(ARM_PICKUP_POSITION);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setTargetPosition(ARM_PICKUP_POSITION);
+        armMotor.setPower(.75);
+        armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         leftClaw = hwMap.get(Servo.class, "leftClaw");
         rightClaw = hwMap.get(Servo.class, "rightClaw");
         rotator = hwMap.get(Servo.class, "rotator");
@@ -120,6 +129,8 @@ public class Intake {
     }
 
     private void handleIntakeState(IntakeState current, Event event) {
+        curArmPosition = armMotor.getCurrentPosition();
+
         switch(event) {
 
             case INIT_EVENT:
@@ -194,11 +205,11 @@ public class Intake {
     }
 
     public void up() {
-        armMotor.motor.setPower(1);
+        armMotor.setTargetPosition(armMotor.getCurrentPosition()+100);
     }
 
     public void down() {
-        armMotor.motor.setPower(-1);
+        armMotor.setTargetPosition(armMotor.getCurrentPosition()-20);
     }
 
     // Toggle state between PICKUP and SCORE (if not in INIT state)
@@ -220,8 +231,8 @@ public class Intake {
         handleRightClawState(rightClawState, Event.RIGHT_CLAW_TOGGLE);
     }
 
-    private void moveArmToPosition(double armPosition) {
-        armMotor.set(armPosition);
+    private void moveArmToPosition(int armPosition) {
+        armMotor.setTargetPosition(armPosition);
     }
 
     private void moveRotatorToPosition(double rotatePosition) {
