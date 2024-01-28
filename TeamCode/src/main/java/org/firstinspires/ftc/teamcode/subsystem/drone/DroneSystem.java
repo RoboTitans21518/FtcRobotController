@@ -42,6 +42,10 @@ public class DroneSystem {
         if (state == DroneState.FLY) state = DroneState.INIT;
     }
 
+    public void down() {
+        moveDroneToPosition(FLY_POSITION);
+    }
+
     public void loop() {
         // React to state
         switch (state) {

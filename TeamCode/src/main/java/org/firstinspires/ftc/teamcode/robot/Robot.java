@@ -54,6 +54,9 @@ public class Robot {
          */
         gamepad.readButtons();
 
+        // update the drone system inputs
+        if (gamepad.wasJustPressed(GamepadKeys.Button.LEFT_STICK_BUTTON)) droneSystem.down();
+
         // Update the meccanum inputs and trigger loop to move the robot
         mecanumDriveTrain.updateInputs(
                 gamepad.getLeftX(), gamepad.getLeftY(), gamepad.getRightX()
@@ -61,7 +64,7 @@ public class Robot {
         mecanumDriveTrain.loop();
 
         // update the intake inputs
-        if (gamepad.wasJustPressed(GamepadKeys.Button.A)) intake.toggleState();
+        //if (gamepad.wasJustPressed(GamepadKeys.Button.A)) intake.toggleState();
         if (gamepad.wasJustPressed(GamepadKeys.Button.B)) intake.toggleRotator();
         if (gamepad.wasJustPressed(GamepadKeys.Button.X)) intake.toggleLeftClaw();
         if (gamepad.wasJustPressed(GamepadKeys.Button.Y)) intake.toggleRightClaw();
@@ -75,11 +78,7 @@ public class Robot {
             hangSystem.down();
         }
 
-        if (rightTriggerReader.isDown()) intake.up();
-        if (leftTriggerReader.isDown()) intake.down();
-
-        // update the drone system inputs
-        if (gamepad.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) droneSystem.toggleState();
-        droneSystem.loop();
+        if (gamepad.isDown(GamepadKeys.Button.DPAD_RIGHT)) intake.up();
+        if (gamepad.isDown(GamepadKeys.Button.DPAD_LEFT)) intake.down();
     }
 }

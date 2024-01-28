@@ -55,8 +55,8 @@ public class Intake {
     private double armPosition;
 
     // TODO: Tune these numbers
-    public static int ARM_PICKUP_POSITION = 100;
-    public static int ARM_SCORE_POSITION = 120;
+    public static int ARM_PICKUP_POSITION = 10;
+    public static int ARM_SCORE_POSITION = 175;
 
     public static double LEFT_CLAW_OPEN_POSITION = 0.3;
     public static double LEFT_CLAW_CLOSE_POSITION = 0.1;
@@ -64,7 +64,7 @@ public class Intake {
     public static double RIGHT_CLAW_CLOSE_POSITION = 0.6;
 
     public static double ROTATOR_FLAT_POSITION = 0.6;
-    public static double ROTATOR_SCORE_POSITION = 0.8;
+    public static double ROTATOR_SCORE_POSITION = 0.6;
 
     public static double curArmPosition = 100;
 
@@ -104,9 +104,12 @@ public class Intake {
         armMotor = hwMap.get(DcMotorEx.class, "armMotor");
         armMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         armMotor.setTargetPosition(ARM_PICKUP_POSITION);
-        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armMotor.setTargetPosition(ARM_PICKUP_POSITION);
         armMotor.setPower(.75);
+        armMotor.setVelocity(1000);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         leftClaw = hwMap.get(Servo.class, "leftClaw");
         rightClaw = hwMap.get(Servo.class, "rightClaw");
@@ -205,11 +208,17 @@ public class Intake {
     }
 
     public void up() {
-        armMotor.setTargetPosition(armMotor.getCurrentPosition()+100);
+        armMotor.setTargetPosition(ARM_SCORE_POSITION);
+        armMotor.setPower(1);
+        armMotor.setVelocity(2000);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void down() {
-        armMotor.setTargetPosition(armMotor.getCurrentPosition()-20);
+        armMotor.setTargetPosition(ARM_PICKUP_POSITION);
+        armMotor.setPower(1);
+        armMotor.setVelocity(2000);
+        armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     // Toggle state between PICKUP and SCORE (if not in INIT state)
@@ -247,7 +256,8 @@ public class Intake {
         // Try to get to the states needed
         switch(armState) {
             case SCORE:
-                moveArmToPosition(ARM_SCORE_POSITION);
+                moveArmToPosition
+                        (ARM_SCORE_POSITION);
                 break;
             case PICKUP:
                 moveArmToPosition(ARM_PICKUP_POSITION);
